@@ -1,19 +1,32 @@
-;;; quarto.el --- Support for the Foo programming language  -*- lexical-binding: t; -*-
+;;; quarto.el --- Package to use quarto within emacs  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2010-2021 Your Name
 
 ;; Author: Your Name <yourname@example.com>
 ;; Maintainer: Someone Else <someone@example.com>
 ;; Created: 14 Jul 2010
+;; License: GPL-3.0-or-later
 ;; package-requires: ((emacs "25.1") (polymode "0.2.2") (poly-markdown "0.2.2") (markdown-mode "2.3") (request "0.3.2"))
-;; Keywords: languages
+;; Keywords: quarto
 ;; URL: https://example.com/foo
 
 ;; This file is not part of GNU Emacs.
 
-;; This file is free software…
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 
-;; along with this file.  If not, see <https://www.gnu.org/licenses/>.
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
 
 (require 'polymode)
 (require 'markdown-mode)
@@ -31,8 +44,49 @@
 (add-to-list 'auto-mode-alist '("\\.qmd\\'" . poly-quarto-mode))
 
 (defvar quarto-preview-url nil
-    "URL of the quarto preview server.")
+  "URL of the quarto preview server.")
 
+;;;###autoload (autoload 'quarto-eval-block "quarto")
+(defalias 'quarto-eval-block #'polymode-eval-chunk
+    "Evaluate code block.")
+
+(defun quarto-eval-block-and-next ()
+  "Evaluate current current block and move to next."
+  (interactive)
+  (quarto-eval-block)
+  (quarto-next-code-block))
+
+(defun quarto-eval-all-blocks-below ()
+  "Evaluate all blocks below point."
+  (interactive)
+  (let ((current (save-excursion (point))))
+    (while (progn
+             (quarto-next-code-block)
+             (quarto-eval-block)
+             (search-forward-regexp "^```{.*?}$" nil t)))
+    (goto-char current)))
+
+(defun quarto-eval-all-blocks ()
+  "Evaluate all blocks in current file."
+  (interactive)
+  (let ((current (save-excursion (point))))
+    (goto-char (point-min))
+    (quarto-eval-blocks-below)
+    (goto-char current)))
+
+(defvar-keymap quarto-code-block-repeat-map
+  :repeat t
+  "n" #'quarto-next-code-block
+  "p" #'quarto-previous-code-block
+  "e" #'quarto-eval-block
+  "E" #'quarto-eval-block-and-next
+  "a" #'quarto-eval-all-blocks-below
+  "A" #'quarto-eval-all-blocks)
+
+(define-key 'poly-quarto-mode-map "M-n M-n" #'quarto-next-code-block)
+(define-key 'poly-quarto-mode-map "M-n M-p" #'quarto-previous-code-block)
+(define-key 'poly-quarto-mode-map "M-n M-e" #'quarto-eval-block)
+ 
 (defun quarto-preview ()
   "Start a quarto preview server."
   (interactive)
