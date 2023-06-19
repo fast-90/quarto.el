@@ -53,8 +53,9 @@
 (defun quarto-eval-block-and-next ()
   "Evaluate current current block and move to next."
   (interactive)
-  (quarto-eval-block)
-  (quarto-next-code-block))
+  (progn
+    (call-interactively #'quarto-eval-block)
+    (quarto-next-code-block)))
 
 (defun quarto-eval-all-blocks-below ()
   "Evaluate all blocks below point."
@@ -62,7 +63,7 @@
   (let ((current (save-excursion (point))))
     (while (progn
              (quarto-next-code-block)
-             (quarto-eval-block)
+             (call-interactively #'quarto-eval-block)
              (search-forward-regexp "^```{.*?}$" nil t)))
     (goto-char current)))
 
@@ -71,7 +72,7 @@
   (interactive)
   (let ((current (save-excursion (point))))
     (goto-char (point-min))
-    (quarto-eval-blocks-below)
+    (quarto-eval-all-blocks-below)
     (goto-char current)))
 
 (defvar-keymap quarto-code-block-repeat-map
@@ -83,9 +84,9 @@
   "a" #'quarto-eval-all-blocks-below
   "A" #'quarto-eval-all-blocks)
 
-(define-key 'poly-quarto-mode-map "M-n M-n" #'quarto-next-code-block)
-(define-key 'poly-quarto-mode-map "M-n M-p" #'quarto-previous-code-block)
-(define-key 'poly-quarto-mode-map "M-n M-e" #'quarto-eval-block)
+(keymap-set poly-quarto-mode-map "M-n M-n" #'quarto-next-code-block)
+(keymap-set poly-quarto-mode-map "M-n M-p" #'quarto-previous-code-block)
+(keymap-set poly-quarto-mode-map "M-n M-e" #'quarto-eval-block)
  
 (defun quarto-preview ()
   "Start a quarto preview server."
