@@ -1,14 +1,14 @@
 ;;; quarto.el --- Package to use quarto within emacs  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2010-2021 Your Name
+;; Copyright (C) 2023-2023 Duy Nguyen
 
-;; Author: Your Name <yourname@example.com>
-;; Maintainer: Someone Else <someone@example.com>
-;; Created: 14 Jul 2010
+;; Author: Duy Nguyen <duynguyen@gmx.com>
+;; Maintainer: Duy Nguyen <duynguyen@gmx.com>
+;; Created: 19 Jun 2023
 ;; License: GPL-3.0-or-later
 ;; package-requires: ((emacs "25.1") (polymode "0.2.2") (poly-markdown "0.2.2") (markdown-mode "2.3") (request "0.3.2"))
 ;; Keywords: quarto
-;; URL: https://example.com/foo
+;; URL: https://github.com/fast-90/quarto.el
 
 ;; This file is not part of GNU Emacs.
 
